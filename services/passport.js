@@ -49,7 +49,7 @@ const jwtOptions = {
 
 const jwtLogin = new JwtStrategy(jwtOptions, function(payload, done) {
   // Check user ID in database
-  User.findById(payload.subdomains, function(err, user) {
+  User.findById(payload.sub, function(err, user) {
     if (err) {
       return done(err, false);
     }

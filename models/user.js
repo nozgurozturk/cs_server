@@ -5,9 +5,9 @@ const Schema = mongoose.Schema;
 // Defining Model
 
 const userSchema = new Schema({
+    name: String,
     email: { type: String, unique: true, lowercase:true },
     password: String,
-    name: String
 });
 
 // Encrypt

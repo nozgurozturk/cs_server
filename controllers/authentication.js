@@ -1,17 +1,17 @@
-const jwt = require('jwt-simple');
-const config = require('../config');
-const User = require('../models/user');
+const jwt = require("jwt-simple");
+const config = require("../config");
+const User = require("../models/user");
 
-function tokenForUser(user){
-    const timesatamp = new Date().getTime();
-    return jwt.encode({ sub: user.id, iat:timesatamp}, config.secret);
+function tokenForUser(user) {
+  const timestamp = new Date().getTime();
+  return jwt.encode({ sub: user.id, iat: timestamp }, config.secret);
 }
 
-exports.signin = function(req, res, next){
-    //Check user object
-    //Give them a token
-    res.send({token:tokenForUser(req.user)})
-}
+exports.signin = function(req, res, next) {
+  //Check user object
+  //Give them a token
+  res.send({ token: tokenForUser(req.user) });
+};
 
 exports.signup = function(req, res, next) {
   const email = req.body.email;
@@ -19,18 +19,19 @@ exports.signup = function(req, res, next) {
   const name = req.body.name;
   // Check User Exist
 
+  if (!name || !password || !name) {
+    return res.status(422).send({ error: "Require email, password and name" });
+  }
+
   User.findOne({ email: email }, function(err, existingUser) {
     if (err) {
       return next(err);
     }
 
-    if(!name || !password || !name){
-        return res.status(422).send({error: 'Require email, password and name'})
-    }
     // If Exist Return Error
 
     if (existingUser) {
-      return res.status(422).send({ error: 'Email is in use' });
+      return res.status(422).send({ error: "Email is in use" });
     }
 
     // User NOT Exist, create and save user record
@@ -38,7 +39,7 @@ exports.signup = function(req, res, next) {
     const user = new User({
       email: email,
       password: password,
-      name:name
+      name: name
     });
     user.save(function(err) {
       if (err) {
@@ -46,7 +47,7 @@ exports.signup = function(req, res, next) {
       }
 
       // Respond request
-      res.json({token: tokenForUser(user)});
+      res.json({ token: tokenForUser(user) });
     });
   });
 };
